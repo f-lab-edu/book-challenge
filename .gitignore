@@ -1,0 +1,26 @@
+# Ignore Gradle Cache
+.gradle
+
+# Ignore Gradle build output directory
+build/
+**/build/
+
+# Gradle Wrapper 포함
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+gen
+rebel.xml
+
+# macOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+/master/
+/slave/
