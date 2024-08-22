@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  mysql-master:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: bookchallnegedb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - ./master/my.cnf:/etc/mysql/my.cnf
+      - ./master/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  mysql-slave:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: bookchallnegedb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - ./slave/my.cnf:/etc/mysql/my.cnf
+      - ./slave/data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    depends_on:
+      - mysql-master
