@@ -4,12 +4,12 @@ spring:
       on-profile: local
   datasource:
     master:
-      jdbc-url: jdbc:mysql://localhost:3306/bookchallnegedb
+      jdbc-url: jdbc:mysql://localhost:3306/bookchallengedb
       username: myuser
       password: mypassword
       driver-class-name: com.mysql.cj.jdbc.Driver
     slave:
-      jdbc-url: jdbc:mysql://localhost:3307/bookchallnegedb
+      jdbc-url: jdbc:mysql://localhost:3307/bookchallengedb
       username: myuser
       password: mypassword
       driver-class-name: com.mysql.cj.jdbc.Driver
