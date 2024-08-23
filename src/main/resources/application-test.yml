@@ -25,12 +25,3 @@ spring:
 
     open-in-view: false
     database-platform: org.hibernate.dialect.H2Dialect
-
-  sql:
-    init:
-      mode: never
-logging:
-  level:
-    org.hibernate.SQL: debug
-    root: info
-    org.hibernate.orm.jdbc.bind: trace
