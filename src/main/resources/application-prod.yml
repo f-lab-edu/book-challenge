@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    master:
+      jdbc-url: ${PROD_JDBC_MASTER_URL}
+      username: myuser
+      password: mypassword
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    slave:
+      jdbc-url: ${PROD_JDBC_SLAVE_URL}
+      username: myuser
+      password: mypassword
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100
+    defer-datasource-initialization: true
+    open-in-view: false
