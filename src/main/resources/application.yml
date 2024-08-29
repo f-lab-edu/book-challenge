@@ -1,3 +1,12 @@
 spring:
   profiles:
     active: local
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /api-docs
+    operations-sorter: method
+    tagsSorter: alpha
+  api-docs:
+    path: /api-spec
+  writer-with-default-pretty-printer: true
