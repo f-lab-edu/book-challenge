@@ -60,8 +60,8 @@ public class DefaultBookService implements BookService {
 
     @Override
     public long updateBook(BookUpdateRequest updateRequest) {
-        Book book = bookRepository.findById(updateRequest.id())
-            .orElseThrow(() -> new GeneralException(BOOK_NOT_FOUND));
+
+        Book book = existsBookById(updateRequest.id());
 
         if (!book.getIsbn().equals(updateRequest.isbn())) {
             existsBookByIsbn(updateRequest.isbn());
@@ -72,6 +72,17 @@ public class DefaultBookService implements BookService {
 
         return update.getId();
 
+    }
+
+    @Override
+    public void deleteBook(long bookId) {
+        Book book = existsBookById(bookId);
+        bookRepository.delete(book);
+    }
+
+    private Book existsBookById(long id) {
+        return bookRepository.findById(id)
+            .orElseThrow(() -> new GeneralException(BOOK_NOT_FOUND));
     }
 
     private void existsBookByIsbn(String isbn) {

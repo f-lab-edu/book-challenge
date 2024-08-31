@@ -135,6 +135,37 @@ class BookServiceTest {
         assertThat(book.pageCount()).isEqualTo(200);
     }
 
+    @DisplayName("책 정보 수정시 책이 존재하지 않으면 예외 반환")
+    @Test
+    void updateBook_NotFound() {
+        // given
+        BookUpdateRequest updateRequest = new BookUpdateRequest(1, "1", "update_book", 200);
+
+        // when
+        // then
+        assertThatThrownBy(() -> bookService.updateBook(updateRequest))
+            .isInstanceOf(GeneralException.class)
+            .hasMessage(BOOK_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("책 삭제 테스트")
+    @Test
+    void deleteBook() {
+        // given
+        long saveBookId = bookService.addBook(bookCreateRequest);
+
+        // when
+        bookService.deleteBook(saveBookId);
+
+        // then
+        String isbn = bookCreateRequest.isbn();
+        
+        assertThatThrownBy(() -> bookService.getBookByIsbn(isbn))
+            .isInstanceOf(GeneralException.class)
+            .hasMessage(BOOK_NOT_FOUND.getMessage());
+
+    }
+
     private void addRandomBooks() {
         for (int i = 0; i < 100; i++) {
             String randomIsbn = RandomStringUtils.randomNumeric(13);
