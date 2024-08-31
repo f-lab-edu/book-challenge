@@ -1,4 +1,4 @@
-package com.flab.book_challenge.book.request;
+package com.flab.book_challenge.book;
 
 import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.response.BookDetailResponse;
