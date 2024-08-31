@@ -1,6 +1,7 @@
 package com.flab.book_challenge.book.request;
 
 import com.flab.book_challenge.book.domain.Book;
+import com.flab.book_challenge.book.response.BookDetailResponse;
 
 public final class BookMapper {
 
@@ -13,5 +14,9 @@ public final class BookMapper {
             .name(name)
             .pageCount(pageCount)
             .build();
+    }
+
+    public static BookDetailResponse toResponse(long id, String isbn, String name, int pageCount) {
+        return new BookDetailResponse(id, isbn, name, pageCount);
     }
 }

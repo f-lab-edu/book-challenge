@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
+@Transactional
 @SpringBootTest
 class BookRepositoryTest {
 
@@ -36,7 +37,6 @@ class BookRepositoryTest {
 
     }
 
-    @Transactional
     @DisplayName("새로운 책 정보 추가 테스트")
     @Test
     void testSaveBook() {
@@ -143,7 +143,7 @@ class BookRepositoryTest {
 
         // when
         String bookName = randomBook.getName();
-        List<Book> bookByName = bookRepository.findBookByName(bookName);
+        List<Book> bookByName = bookRepository.findBooksByName(bookName);
         System.out.println(">>> bookByBookName: " + bookByName.toString());
 
         // then
@@ -151,7 +151,7 @@ class BookRepositoryTest {
         assertThat(bookByName.get(0).getName()).isEqualTo(randomBook.getName());
     }
 
-    @Transactional
+
     @DisplayName("책 제거 테스트")
     @Test
     void removeBook() {
@@ -167,7 +167,7 @@ class BookRepositoryTest {
         assertThat(bookRepository.existsById(book1.getId())).isFalse();
     }
 
-    @Transactional
+
     @DisplayName("책 업데이트 테스트")
     @Test
     void updateBook() {
