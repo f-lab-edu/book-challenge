@@ -58,6 +58,7 @@ public class DefaultBookService implements BookService {
         return saveBook.getId();
     }
 
+    @Transactional
     @Override
     public long updateBook(BookUpdateRequest updateRequest) {
 
@@ -74,6 +75,7 @@ public class DefaultBookService implements BookService {
 
     }
 
+    @Transactional
     @Override
     public void deleteBook(long bookId) {
         Book book = existsBookById(bookId);
