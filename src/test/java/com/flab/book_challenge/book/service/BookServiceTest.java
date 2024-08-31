@@ -139,7 +139,7 @@ class BookServiceTest {
     @Test
     void updateBook_NotFound() {
         // given
-        BookUpdateRequest updateRequest = new BookUpdateRequest(1, "1", "update_book", 200);
+        BookUpdateRequest updateRequest = new BookUpdateRequest(1L, "1", "update_book", 200);
 
         // when
         // then
@@ -159,7 +159,7 @@ class BookServiceTest {
 
         // then
         String isbn = bookCreateRequest.isbn();
-        
+
         assertThatThrownBy(() -> bookService.getBookByIsbn(isbn))
             .isInstanceOf(GeneralException.class)
             .hasMessage(BOOK_NOT_FOUND.getMessage());

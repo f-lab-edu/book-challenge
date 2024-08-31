@@ -1,5 +1,10 @@
 package com.flab.book_challenge.book.request;
 
-public record BookCreateRequest(String isbn, String name, int pageCount) {
+import jakarta.validation.constraints.NotBlank;
+
+public record BookCreateRequest(
+    @NotBlank String isbn,
+    @NotBlank String name,
+    int pageCount) {
 
 }
