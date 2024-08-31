@@ -59,7 +59,7 @@ public class DefaultBookService implements BookService {
     }
 
     @Override
-    public void updateBook(BookUpdateRequest updateRequest) {
+    public long updateBook(BookUpdateRequest updateRequest) {
         Book book = bookRepository.findById(updateRequest.id())
             .orElseThrow(() -> new GeneralException(BOOK_NOT_FOUND));
 
@@ -67,7 +67,10 @@ public class DefaultBookService implements BookService {
             existsBookByIsbn(updateRequest.isbn());
         }
 
-        book.update(BookMapper.toEntity(updateRequest.isbn(), updateRequest.name(), updateRequest.pageCount()));
+        Book update = book.update(
+            BookMapper.toEntity(updateRequest.isbn(), updateRequest.name(), updateRequest.pageCount()));
+
+        return update.getId();
 
     }
 

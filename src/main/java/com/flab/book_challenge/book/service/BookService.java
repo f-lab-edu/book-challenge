@@ -15,5 +15,5 @@ public interface BookService {
 
     long addBook(BookCreateRequest bookCreateRequest);
 
-    void updateBook(BookUpdateRequest updateRequest);
+    long updateBook(BookUpdateRequest updateRequest);
 }
