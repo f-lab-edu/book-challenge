@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.flab.book_challenge.book.request.BookCreateRequest;
+import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
 import java.util.List;
@@ -35,21 +36,6 @@ class BookServiceTest {
 
         bookCreateRequest = new BookCreateRequest(randomIsbn, "test_book", randomCount);
 
-    }
-
-
-    @DisplayName("isbn이 중복된 책이면 추가되지 않고 예외반환")
-    @Test
-    void addBook() {
-        // given
-        BookCreateRequest bookDuplicatedRequest = new BookCreateRequest(bookCreateRequest.isbn(), "test_book", 200);
-        bookService.addBook(bookCreateRequest);
-
-        // when
-        // then
-        assertThatThrownBy(() -> bookService.addBook(bookDuplicatedRequest))
-            .isInstanceOf(GeneralException.class)
-            .hasMessage(BOOK_DUPLICATION.getMessage());
     }
 
 
@@ -113,6 +99,40 @@ class BookServiceTest {
         assertThat(books.get(randomIndex).isbn()).isNotNull();
         assertThat(books.get(randomIndex).name()).isEqualTo("test_book");
         assertThat(books.get(randomIndex).pageCount()).isNotZero();
+    }
+
+
+    @DisplayName("isbn이 중복된 책이면 추가되지 않고 예외반환")
+    @Test
+    void addBook() {
+        // given
+        BookCreateRequest bookDuplicatedRequest = new BookCreateRequest(bookCreateRequest.isbn(), "test_book", 200);
+        bookService.addBook(bookCreateRequest);
+
+        // when
+        // then
+        assertThatThrownBy(() -> bookService.addBook(bookDuplicatedRequest))
+            .isInstanceOf(GeneralException.class)
+            .hasMessage(BOOK_DUPLICATION.getMessage());
+    }
+
+    @DisplayName("책 정보 수정")
+    @Test
+    void updateBook() {
+        // given
+        long saveBookId = bookService.addBook(bookCreateRequest);
+        BookUpdateRequest updateRequest = new BookUpdateRequest(saveBookId, bookCreateRequest.isbn(), "update_book",
+            200);
+
+        // when
+        bookService.updateBook(updateRequest);
+
+        // then
+        BookDetailResponse book = bookService.getBookByIsbn(bookCreateRequest.isbn());
+        assertThat(book.id()).isNotZero();
+        assertThat(book.isbn()).isEqualTo(bookCreateRequest.isbn());
+        assertThat(book.name()).isEqualTo("update_book");
+        assertThat(book.pageCount()).isEqualTo(200);
     }
 
     private void addRandomBooks() {

@@ -4,8 +4,10 @@ import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_DUPLICAT
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_NOT_FOUND;
 
 import com.flab.book_challenge.book.BookMapper;
+import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.repository.BookRepository;
 import com.flab.book_challenge.book.request.BookCreateRequest;
+import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
 import java.util.List;
@@ -46,15 +48,34 @@ public class DefaultBookService implements BookService {
 
     @Transactional
     @Override
-    public void addBook(BookCreateRequest bookRequest) {
+    public long addBook(BookCreateRequest bookRequest) {
 
-        bookRepository.findBookByIsbn(bookRequest.isbn())
-            .ifPresent(book -> {
-                throw new GeneralException(BOOK_DUPLICATION);
-            });
+        existsBookByIsbn(bookRequest.isbn());
 
-        bookRepository.save(BookMapper.toEntity(bookRequest.isbn(), bookRequest.name(), bookRequest.pageCount()));
+        Book saveBook = bookRepository.save(
+            BookMapper.toEntity(bookRequest.isbn(), bookRequest.name(), bookRequest.pageCount()));
+
+        return saveBook.getId();
     }
 
+    @Override
+    public void updateBook(BookUpdateRequest updateRequest) {
+        Book book = bookRepository.findById(updateRequest.id())
+            .orElseThrow(() -> new GeneralException(BOOK_NOT_FOUND));
+
+        if (!book.getIsbn().equals(updateRequest.isbn())) {
+            existsBookByIsbn(updateRequest.isbn());
+        }
+
+        book.update(BookMapper.toEntity(updateRequest.isbn(), updateRequest.name(), updateRequest.pageCount()));
+
+    }
+
+    private void existsBookByIsbn(String isbn) {
+        bookRepository.findBookByIsbn(isbn)
+            .ifPresent(b -> {
+                throw new GeneralException(BOOK_DUPLICATION);
+            });
+    }
 
 }
