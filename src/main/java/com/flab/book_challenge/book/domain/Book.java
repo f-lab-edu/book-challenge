@@ -37,4 +37,12 @@ public class Book {
     @Column(name = "page_count")
     private Integer pageCount;
 
+    public Book update(Book updateBook) {
+        this.isbn = updateBook.getIsbn();
+        this.name = updateBook.getName();
+        this.pageCount = updateBook.getPageCount();
+
+        return this;
+    }
+
 }
