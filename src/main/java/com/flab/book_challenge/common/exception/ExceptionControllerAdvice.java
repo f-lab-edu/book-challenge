@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionAdvice {
+public class ExceptionControllerAdvice {
 
     @ExceptionHandler(GeneralException.class)
     public ResponseEntity<?> handleGeneralException(GeneralException e) {
