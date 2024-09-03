@@ -30,8 +30,10 @@ public class Book {
     @Column(name = "book_id")
     private Long id;
 
+    @Column(name = "book_code")
     private String bookCode;
 
+    @Column(name = "name")
     private String name;
 
     @Column(name = "page_count")
