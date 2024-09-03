@@ -34,10 +34,8 @@ public class BookController {
 
     @Operation(summary = "책 전체 조회", tags = "Book")
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getBooks() {
-        List<BookDetailResponse> books = bookService.getBooks();
-
-        return ResponseEntity.ok(new ApiResponse<>(books));
+    public ResponseEntity<ApiResponse<List<BookDetailResponse>>> getBooks() {
+        return ResponseEntity.ok(new ApiResponse<>(bookService.getBooks()));
     }
 
     @Operation(summary = "책 검색", tags = "Book")
@@ -57,27 +55,22 @@ public class BookController {
 
     @Operation(summary = "책 추가", tags = "Book")
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> addBook(
+    public ResponseEntity<ApiResponse<Long>> addBook(
         @RequestBody @Valid BookCreateRequest request) {
-
-        long id = bookService.addBook(request);
-        return ResponseEntity.ok(new ApiResponse<>(id));
+        return ResponseEntity.ok(new ApiResponse<>(bookService.addBook(request)));
     }
 
     @Operation(summary = "책 수정", tags = "Book")
     @PutMapping
-    public ResponseEntity<ApiResponse<?>> updateBook(
+    public ResponseEntity<ApiResponse<Long>> updateBook(
         @RequestBody @Valid BookUpdateRequest request) {
-
-        long id = bookService.updateBook(request);
-        return ResponseEntity.ok(new ApiResponse<>(id));
+        return ResponseEntity.ok(new ApiResponse<>(bookService.updateBook(request)));
     }
 
     @Operation(summary = "책 삭제", tags = "Book")
     @DeleteMapping
-    public ResponseEntity<?> deleteBook(
+    public ResponseEntity<Object> deleteBook(
         @RequestParam long id) {
-
         bookService.deleteBook(id);
         return ResponseEntity.ok().build();
     }
