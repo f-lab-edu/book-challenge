@@ -17,7 +17,7 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(GeneralException.class)
     public ResponseEntity<?> handleGeneralException(GeneralException e) {
-        log.error("[API ERROR]: {}", e.getMessage());
+        log.warn("[API ERROR]: {}", e.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(e.getCode(), e.getMessage());
         HttpStatus status = ErrorStatus.getHttpStatusByCode(e.getCode());
 

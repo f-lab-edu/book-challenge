@@ -1,13 +1,10 @@
 package com.flab.book_challenge.book.controller;
 
-import static com.flab.book_challenge.common.exception.ErrorStatus.QUERY_NOT_FOUND;
-
-import ch.qos.logback.core.util.StringUtil;
 import com.flab.book_challenge.book.request.BookCreateRequest;
+import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
 import com.flab.book_challenge.book.service.BookService;
-import com.flab.book_challenge.common.exception.GeneralException;
 import com.flab.book_challenge.common.header.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,17 +38,10 @@ public class BookController {
 
     @Operation(summary = "책 검색", tags = "Book")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<?>> searchBooks(
-        @RequestParam(required = false) String bookCode,
-        @RequestParam(required = false) String name) {
-
-        if (StringUtil.notNullNorEmpty(bookCode)) {
-            return ResponseEntity.ok(new ApiResponse<>(findBookByBookCode(bookCode)));
-        } else if (StringUtil.notNullNorEmpty(name)) {
-            return ResponseEntity.ok(new ApiResponse<>(findBooksByName(name)));
-        }
-
-        throw new GeneralException(QUERY_NOT_FOUND);
+    public ResponseEntity<ApiResponse<List<BookDetailResponse>>> searchBooks(
+        @ModelAttribute BookSearchRequest bookSearchRequest
+    ) {
+        return ResponseEntity.ok(new ApiResponse<>(bookService.searchBooks(bookSearchRequest)));
     }
 
     @Operation(summary = "책 추가", tags = "Book")
@@ -73,14 +64,6 @@ public class BookController {
         @RequestParam long id) {
         bookService.deleteBook(id);
         return ResponseEntity.ok().build();
-    }
-
-    private BookDetailResponse findBookByBookCode(String bookCode) {
-        return bookService.getBookByBookCode(bookCode);
-    }
-
-    private List<BookDetailResponse> findBooksByName(String name) {
-        return bookService.getBooksByName(name);
     }
 
 }

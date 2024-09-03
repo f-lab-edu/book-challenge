@@ -2,11 +2,14 @@ package com.flab.book_challenge.book.service;
 
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_DUPLICATION;
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_NOT_FOUND;
+import static com.flab.book_challenge.common.exception.ErrorStatus.QUERY_NOT_FOUND;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.flab.book_challenge.book.BookMapper;
 import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.repository.BookRepository;
 import com.flab.book_challenge.book.request.BookCreateRequest;
+import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
@@ -23,14 +26,26 @@ public class DefaultBookService implements BookService {
 
 
     @Override
+    public List<BookDetailResponse> searchBooks(BookSearchRequest searchRequest) {
+
+        if (StringUtil.notNullNorEmpty(searchRequest.getBookCode())) {
+            return List.of(getBookByBookCode(searchRequest.getBookCode()));
+        }
+        else if (StringUtil.notNullNorEmpty(searchRequest.getName())) {
+            return getBooksByName(searchRequest.getName());
+        }
+
+        throw new GeneralException(QUERY_NOT_FOUND);
+    }
+
+    @Override
     public List<BookDetailResponse> getBooks() {
         return bookRepository.findAll().stream()
             .map(book -> BookMapper.toResponse(book.getId(), book.getBookCode(), book.getName(), book.getPageCount()))
             .toList();
     }
 
-    // bookCode 조회는 단일 책을, 이름 검색은 책 목록을 반환합니다.
-
+    // bookCode 조회는 단일 책을, 정확한 이름 검색은 책 목록을 반환합니다.
     @Override
     public BookDetailResponse getBookByBookCode(String bookCode) {
         return bookRepository.findBookByBookCode(bookCode)
