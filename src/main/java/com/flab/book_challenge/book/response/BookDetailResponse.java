@@ -2,7 +2,7 @@ package com.flab.book_challenge.book.response;
 
 public record BookDetailResponse(
     long id,
-    String isbn,
+    String bookCode,
     String name,
     int pageCount
 ) {

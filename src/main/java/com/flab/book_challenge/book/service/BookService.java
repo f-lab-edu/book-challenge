@@ -9,7 +9,7 @@ public interface BookService {
 
     List<BookDetailResponse> getBooks();
 
-    BookDetailResponse getBookByIsbn(String isbn);
+    BookDetailResponse getBookByBookCode(String bookCode);
 
     List<BookDetailResponse> getBooksByName(String name);
 

@@ -31,10 +31,10 @@ class BookServiceTest {
 
     @BeforeEach
     void setUp() {
-        String randomIsbn = RandomStringUtils.randomNumeric(13);
+        String randomBookCode = RandomStringUtils.randomNumeric(13);
         int randomCount = (int) (Math.random() * 101) + 100;
 
-        bookCreateRequest = new BookCreateRequest(randomIsbn, "test_book", randomCount);
+        bookCreateRequest = new BookCreateRequest(randomBookCode, "test_book", randomCount);
 
     }
 
@@ -51,33 +51,33 @@ class BookServiceTest {
 
         assertThat(books).hasSize(100);
         assertThat(books.get(randomIndex).id()).isNotZero();
-        assertThat(books.get(randomIndex).isbn()).isNotNull();
+        assertThat(books.get(randomIndex).bookCode()).isNotNull();
         assertThat(books.get(randomIndex).name()).isNotNull();
         assertThat(books.get(randomIndex).pageCount()).isNotZero();
     }
 
 
-    @DisplayName("책 ISBN으로 조회")
+    @DisplayName("책 bookCode로 조회")
     @Test
-    void getBookByIsbn() {
+    void getBookByBookCode() {
         // given
         bookService.addBook(bookCreateRequest);
         // when
-        BookDetailResponse book = bookService.getBookByIsbn(bookCreateRequest.isbn());
+        BookDetailResponse book = bookService.getBookByBookCode(bookCreateRequest.bookCode());
         // then
         assertThat(book.id()).isNotZero();
-        assertThat(book.isbn()).isEqualTo(bookCreateRequest.isbn());
+        assertThat(book.bookCode()).isEqualTo(bookCreateRequest.bookCode());
         assertThat(book.name()).isEqualTo(bookCreateRequest.name());
         assertThat(book.pageCount()).isEqualTo(bookCreateRequest.pageCount());
     }
 
-    @DisplayName("존재하지 않는 책 ISBN으로 조회시 예외 반환")
+    @DisplayName("존재하지 않는 책 BookCode로 조회시 예외 반환")
     @Test
-    void getBookByIsbn_NotFound() {
+    void getBookByBookCode_NotFound() {
         // given
         // when
         // then
-        assertThatThrownBy(() -> bookService.getBookByIsbn("1"))
+        assertThatThrownBy(() -> bookService.getBookByBookCode("1"))
             .isInstanceOf(GeneralException.class)
             .hasMessage(BOOK_NOT_FOUND.getMessage());
     }
@@ -96,17 +96,17 @@ class BookServiceTest {
 
         assertThat(books).hasSize(100);
         assertThat(books.get(randomIndex).id()).isNotZero();
-        assertThat(books.get(randomIndex).isbn()).isNotNull();
+        assertThat(books.get(randomIndex).bookCode()).isNotNull();
         assertThat(books.get(randomIndex).name()).isEqualTo("test_book");
         assertThat(books.get(randomIndex).pageCount()).isNotZero();
     }
 
 
-    @DisplayName("isbn이 중복된 책이면 추가되지 않고 예외반환")
+    @DisplayName("bookCode가 중복된 책이면 추가되지 않고 예외반환")
     @Test
     void addBook() {
         // given
-        BookCreateRequest bookDuplicatedRequest = new BookCreateRequest(bookCreateRequest.isbn(), "test_book", 200);
+        BookCreateRequest bookDuplicatedRequest = new BookCreateRequest(bookCreateRequest.bookCode(), "test_book", 200);
         bookService.addBook(bookCreateRequest);
 
         // when
@@ -121,16 +121,16 @@ class BookServiceTest {
     void updateBook() {
         // given
         long saveBookId = bookService.addBook(bookCreateRequest);
-        BookUpdateRequest updateRequest = new BookUpdateRequest(saveBookId, bookCreateRequest.isbn(), "update_book",
+        BookUpdateRequest updateRequest = new BookUpdateRequest(saveBookId, bookCreateRequest.bookCode(), "update_book",
             200);
 
         // when
         bookService.updateBook(updateRequest);
 
         // then
-        BookDetailResponse book = bookService.getBookByIsbn(bookCreateRequest.isbn());
+        BookDetailResponse book = bookService.getBookByBookCode(bookCreateRequest.bookCode());
         assertThat(book.id()).isNotZero();
-        assertThat(book.isbn()).isEqualTo(bookCreateRequest.isbn());
+        assertThat(book.bookCode()).isEqualTo(bookCreateRequest.bookCode());
         assertThat(book.name()).isEqualTo("update_book");
         assertThat(book.pageCount()).isEqualTo(200);
     }
@@ -158,9 +158,9 @@ class BookServiceTest {
         bookService.deleteBook(saveBookId);
 
         // then
-        String isbn = bookCreateRequest.isbn();
+        String bookCode = bookCreateRequest.bookCode();
 
-        assertThatThrownBy(() -> bookService.getBookByIsbn(isbn))
+        assertThatThrownBy(() -> bookService.getBookByBookCode(bookCode))
             .isInstanceOf(GeneralException.class)
             .hasMessage(BOOK_NOT_FOUND.getMessage());
 
@@ -168,9 +168,9 @@ class BookServiceTest {
 
     private void addRandomBooks() {
         for (int i = 0; i < 100; i++) {
-            String randomIsbn = RandomStringUtils.randomNumeric(13);
+            String randomBookCode = RandomStringUtils.randomNumeric(13);
             int randomCount = (int) (Math.random() * 101) + 100;
-            bookCreateRequest = new BookCreateRequest(randomIsbn, "test_book", randomCount);
+            bookCreateRequest = new BookCreateRequest(randomBookCode, "test_book", randomCount);
             try {
                 bookService.addBook(bookCreateRequest);
             } catch (GeneralException e) {

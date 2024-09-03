@@ -30,7 +30,7 @@ public class Book {
     @Column(name = "book_id")
     private Long id;
 
-    private String isbn;
+    private String bookCode;
 
     private String name;
 
@@ -38,7 +38,7 @@ public class Book {
     private Integer pageCount;
 
     public Book update(Book updateBook) {
-        this.isbn = updateBook.getIsbn();
+        this.bookCode = updateBook.getBookCode();
         this.name = updateBook.getName();
         this.pageCount = updateBook.getPageCount();
 

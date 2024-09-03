@@ -26,11 +26,11 @@ class BookRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        String randomIsbn = RandomStringUtils.randomNumeric(13);
+        String randomBookCode = RandomStringUtils.randomNumeric(13);
         int randomCount = (int) (Math.random() * 101) + 100;
 
         book1 = Book.builder()
-            .isbn(randomIsbn)
+            .bookCode(randomBookCode)
             .name("test_book")
             .pageCount(randomCount)
             .build();
@@ -43,11 +43,11 @@ class BookRepositoryTest {
         System.out.println(">>> SetUp Book1: " + book1.toString());
 
         // given
-        String randomIsbn = RandomStringUtils.randomNumeric(13);
+        String randomBookCode = RandomStringUtils.randomNumeric(13);
         int randomCount = (int) (Math.random() * 101) + 100;
 
         book1 = Book.builder()
-            .isbn(randomIsbn)
+            .bookCode(randomBookCode)
             .name("test_book")
             .pageCount(randomCount)
             .build();
@@ -60,7 +60,7 @@ class BookRepositoryTest {
 
         // then
         assertThat(saveBook1.getId()).isNotNull();
-        assertThat(saveBook1.getIsbn()).isEqualTo(randomIsbn);
+        assertThat(saveBook1.getBookCode()).isEqualTo(randomBookCode);
         assertThat(saveBook1.getPageCount()).isEqualTo(randomCount);
         assertThat(saveBook1.getName()).isEqualTo("test_book");
         assertThat(saveBook1.getId()).isPositive();
@@ -83,18 +83,18 @@ class BookRepositoryTest {
         checkSameBook(saveBook1, book1);
     }
 
-    @DisplayName("ISBN으로 책 조회 테스트")
+    @DisplayName("BookCode로 책 조회 테스트")
     @Test
-    void readBookByIsbn() {
+    void readBookByBookCode() {
         // given
         ArrayList<Book> books = new ArrayList<>(100);
 
         for (int i = 0; i < 100; i++) {
-            String randomIsbn = RandomStringUtils.randomNumeric(13);
+            String randomBookCode = RandomStringUtils.randomNumeric(13);
             int randomCount = (int) (Math.random() * 101) + 100;
             Book book;
             book = Book.builder()
-                .isbn(randomIsbn)
+                .bookCode(randomBookCode)
                 .name("test_book")
                 .pageCount(randomCount)
                 .build();
@@ -105,16 +105,14 @@ class BookRepositoryTest {
         bookRepository.saveAll(books);
 
         Book randomBook = books.get((int) (Math.random() * 101));
-        System.out.println(">>> randomBook: " + randomBook.toString());
 
         // when
-        String isbn = randomBook.getIsbn();
-        Book bookByIsbn = bookRepository.findBookByIsbn(isbn)
+        String bookCode = randomBook.getBookCode();
+        Book bookByBookCode = bookRepository.findBookByBookCode(bookCode)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 책"));
-        System.out.println(">>> bookByIsbn: " + bookByIsbn.toString());
 
         // then
-        checkSameBook(bookByIsbn, randomBook);
+        checkSameBook(bookByBookCode, randomBook);
     }
 
     @DisplayName("책이름으로 책 조회 테스트")
@@ -124,11 +122,11 @@ class BookRepositoryTest {
         ArrayList<Book> books = new ArrayList<>(100);
 
         for (int i = 0; i < 100; i++) {
-            String randomIsbn = RandomStringUtils.randomNumeric(13);
+            String randomBookCode = RandomStringUtils.randomNumeric(13);
             int randomCount = (int) (Math.random() * 101) + 100;
             Book book;
             book = Book.builder()
-                .isbn(randomIsbn)
+                .bookCode(randomBookCode)
                 .name("test_book")
                 .pageCount(randomCount)
                 .build();
@@ -176,7 +174,7 @@ class BookRepositoryTest {
         System.out.println(">>> addNewBook saveBook1: " + book1.toString());
 
         Book updatedBook = book1.update(Book.builder()
-            .isbn("123456789")
+            .bookCode("123456789")
             .name("test_book")
             .pageCount(100)
             .build());
@@ -197,7 +195,7 @@ class BookRepositoryTest {
 
     private void checkSameBook(Book actualBook, Book expectedBook) {
 
-        assertThat(actualBook.getIsbn()).isEqualTo(expectedBook.getIsbn());
+        assertThat(actualBook.getBookCode()).isEqualTo(expectedBook.getBookCode());
         assertThat(actualBook.getId()).isEqualTo(expectedBook.getId());
         assertThat(actualBook.getPageCount()).isEqualTo(expectedBook.getPageCount());
         assertThat(actualBook.getName()).isEqualTo(expectedBook.getName());

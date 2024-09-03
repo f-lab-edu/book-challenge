@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorStatus {
 
     // COMMON
-    QUERY_NOT_FOUND(NOT_FOUND, "COMMON_0", "isbn이나 name을 입력해주세요"),
+    QUERY_NOT_FOUND(NOT_FOUND, "COMMON_0", "bookCode나 name을 입력해주세요"),
 
     // BOOK
     BOOK_DUPLICATION(BAD_REQUEST, "BOOK_0", "이미 존재하는 책입니다."),

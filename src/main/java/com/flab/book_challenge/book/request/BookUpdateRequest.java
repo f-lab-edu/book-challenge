@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record BookUpdateRequest(
     @NotNull Long id,
-    @NotBlank String isbn,
+    @NotBlank String bookCode,
     @NotBlank String name,
     int pageCount) {
 }

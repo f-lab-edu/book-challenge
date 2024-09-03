@@ -43,11 +43,11 @@ public class BookController {
     @Operation(summary = "책 검색", tags = "Book")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<?>> searchBooks(
-        @RequestParam(required = false) String isbn,
+        @RequestParam(required = false) String bookCode,
         @RequestParam(required = false) String name) {
 
-        if (StringUtil.notNullNorEmpty(isbn)) {
-            return ResponseEntity.ok(new ApiResponse<>(findBookByIsbn(isbn)));
+        if (StringUtil.notNullNorEmpty(bookCode)) {
+            return ResponseEntity.ok(new ApiResponse<>(findBookByBookCode(bookCode)));
         } else if (StringUtil.notNullNorEmpty(name)) {
             return ResponseEntity.ok(new ApiResponse<>(findBooksByName(name)));
         }
@@ -82,8 +82,8 @@ public class BookController {
         return ResponseEntity.ok().build();
     }
 
-    private BookDetailResponse findBookByIsbn(String isbn) {
-        return bookService.getBookByIsbn(isbn);
+    private BookDetailResponse findBookByBookCode(String bookCode) {
+        return bookService.getBookByBookCode(bookCode);
     }
 
     private List<BookDetailResponse> findBooksByName(String name) {
