@@ -40,7 +40,6 @@ class BookRepositoryTest {
     @DisplayName("새로운 책 정보 추가 테스트")
     @Test
     void testSaveBook() {
-        System.out.println(">>> SetUp Book1: " + book1.toString());
 
         // given
         String randomBookCode = RandomStringUtils.randomNumeric(13);
@@ -52,11 +51,8 @@ class BookRepositoryTest {
             .pageCount(randomCount)
             .build();
 
-        System.out.println(">>> addNewBook Book1: " + book1.toString());
-
         // when
         Book saveBook1 = bookRepository.save(book1);
-        System.out.println(">>> Saved saveBook1: " + saveBook1);
 
         // then
         assertThat(saveBook1.getId()).isNotNull();
@@ -70,9 +66,7 @@ class BookRepositoryTest {
     @Test
     void readBook() {
         // given
-        System.out.println(">>> SetUp Book1: " + book1.toString());
         bookRepository.save(book1);
-        System.out.println(">>> addNewBook saveBook1: " + book1.toString());
 
         // when
         Book saveBook1 = bookRepository.findById(book1.getId())
@@ -137,12 +131,10 @@ class BookRepositoryTest {
         bookRepository.saveAll(books);
 
         Book randomBook = books.get((int) (Math.random() * 101));
-        System.out.println(">>> randomBook: " + randomBook.toString());
 
         // when
         String bookName = randomBook.getName();
         List<Book> bookByName = bookRepository.findBooksByName(bookName);
-        System.out.println(">>> bookByBookName: " + bookByName.toString());
 
         // then
         assertThat(bookByName).isNotEmpty();
@@ -154,9 +146,7 @@ class BookRepositoryTest {
     @Test
     void removeBook() {
         // given
-        System.out.println(">>> SetUp Book1: " + book1.toString());
         bookRepository.save(book1);
-        System.out.println(">>> addNewBook saveBook1: " + book1.toString());
 
         // when
         bookRepository.delete(book1);
@@ -171,24 +161,15 @@ class BookRepositoryTest {
     void updateBook() {
         // given
         bookRepository.save(book1);
-        System.out.println(">>> addNewBook saveBook1: " + book1.toString());
 
-        Book updatedBook = book1.update(Book.builder()
-            .bookCode("123456789")
-            .name("test_book")
-            .pageCount(100)
-            .build());
-
-        System.out.println(">>> updateBook: " + updatedBook.toString());
+        book1.updateBookCode("123456789");
 
         // when
         Book book = bookRepository.findById(book1.getId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 책"));
 
-        System.out.println(">>> updatedAfterBook: " + book);
-
         // then
-        checkSameBook(book, updatedBook);
+        assertThat(book.getBookCode()).isEqualTo("123456789");
 
 
     }

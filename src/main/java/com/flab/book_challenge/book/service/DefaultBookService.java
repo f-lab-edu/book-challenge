@@ -64,30 +64,20 @@ public class DefaultBookService implements BookService {
     @Transactional
     @Override
     public long addBook(BookCreateRequest bookRequest) {
-
         existsBookByBookCode(bookRequest.bookCode());
-
-        Book saveBook = bookRepository.save(
-            BookMapper.toEntity(bookRequest.bookCode(), bookRequest.name(), bookRequest.pageCount()));
-
-        return saveBook.getId();
+        return bookRepository.save(
+            BookMapper.toEntity(bookRequest.bookCode(), bookRequest.name(), bookRequest.pageCount())).getId();
     }
 
     @Transactional
     @Override
     public long updateBook(BookUpdateRequest updateRequest) {
-
         Book book = existsBookById(updateRequest.id());
-
         if (!book.getBookCode().equals(updateRequest.bookCode())) {
             existsBookByBookCode(updateRequest.bookCode());
         }
 
-        Book update = book.update(
-            BookMapper.toEntity(updateRequest.bookCode(), updateRequest.name(), updateRequest.pageCount()));
-
-        return update.getId();
-
+        return updateBook(book, updateRequest).getId();
     }
 
     @Transactional
@@ -107,6 +97,14 @@ public class DefaultBookService implements BookService {
             .ifPresent(b -> {
                 throw new GeneralException(BOOK_DUPLICATION);
             });
+    }
+
+    private Book updateBook(Book preBook, BookUpdateRequest updateRequest) {
+        preBook.updateBookCode(updateRequest.bookCode());
+        preBook.updateName(updateRequest.name());
+        preBook.updatePageCount(updateRequest.pageCount());
+
+        return bookRepository.save(preBook);
     }
 
 }

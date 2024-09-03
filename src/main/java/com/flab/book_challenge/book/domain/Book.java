@@ -39,12 +39,23 @@ public class Book {
     @Column(name = "page_count")
     private Integer pageCount;
 
-    public Book update(Book updateBook) {
-        this.bookCode = updateBook.getBookCode();
-        this.name = updateBook.getName();
-        this.pageCount = updateBook.getPageCount();
+//    public Book update(Book updateBook) {
+//        this.bookCode = updateBook.getBookCode();
+//        this.name = updateBook.getName();
+//        this.pageCount = updateBook.getPageCount();
+//
+//        return this;
+//    }
 
-        return this;
+    public void updateBookCode(String bookCode) {
+        this.bookCode = bookCode;
     }
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePageCount(Integer pageCount) {
+        this.pageCount = pageCount;
+    }
 }
