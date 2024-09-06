@@ -1,28 +1,30 @@
 package com.flab.book_challenge.book.domain;
 
 
+import com.flab.book_challenge.common.Auditable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @ToString
 @Getter
-public class Book {
+@Table(name = "book")
+public class Book extends Auditable {
 
     @Id
     @Include
@@ -33,7 +35,7 @@ public class Book {
     @Column(name = "book_code")
     private String bookCode;
 
-    @Column(name = "name")
+    @Column(name = "book_name")
     private String name;
 
     @Column(name = "page_count")
@@ -50,5 +52,22 @@ public class Book {
 
     public void updatePageCount(Integer pageCount) {
         this.pageCount = pageCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Book book = (Book) o;
+        return Objects.equals(id, book.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
