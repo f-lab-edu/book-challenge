@@ -6,6 +6,7 @@ import static com.flab.book_challenge.common.exception.ErrorStatus.QUERY_NOT_FOU
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.flab.book_challenge.book.controller.BookSortType;
 import com.flab.book_challenge.book.request.BookCreateRequest;
 import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
@@ -19,6 +20,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,9 +50,13 @@ class BookServiceTest {
     void getBooks() {
         // given
         addRandomBooks();
+        Pageable pageable = PageRequest.of(0, 100);
+        BookSortType sortType = BookSortType.LATEST;
+
         // when
-        BooksResponse books = bookService.getBooks(0, 100);
+        BooksResponse books = bookService.getBooks(pageable, sortType);
         List<BookDetailResponse> booksContent = books.data();
+
         // then
         int randomIndex = (int) (Math.random() * 100);
 

@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,10 +36,10 @@ public class BookController {
     @Operation(summary = "책 전체 조회 (페이징)", tags = "Book")
     @GetMapping
     public ResponseEntity<ApiResponse<BooksResponse>> getBooks(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @PageableDefault(size = 100) Pageable pageable,
+        @RequestParam(defaultValue = "LATEST") BookSortType sortType
     ) {
-        return ResponseEntity.ok(new ApiResponse<>(bookService.getBooks(page, size)));
+        return ResponseEntity.ok(new ApiResponse<>(bookService.getBooks(pageable, sortType)));
     }
 
     @Operation(summary = "책 검색", tags = "Book")

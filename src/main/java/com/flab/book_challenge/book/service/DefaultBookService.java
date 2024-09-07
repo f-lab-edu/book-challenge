@@ -6,6 +6,7 @@ import static com.flab.book_challenge.common.exception.ErrorStatus.QUERY_NOT_FOU
 
 import ch.qos.logback.core.util.StringUtil;
 import com.flab.book_challenge.book.BookMapper;
+import com.flab.book_challenge.book.controller.BookSortType;
 import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.repository.BookRepository;
 import com.flab.book_challenge.book.request.BookCreateRequest;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,10 +45,8 @@ public class DefaultBookService implements BookService {
     }
 
     @Override
-    public BooksResponse getBooks(int page, int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage = bookRepository.findAll(pageable);
+    public BooksResponse getBooks(Pageable pageable, BookSortType sortType) {
+        Page<Book> bookPage = bookRepository.findAll(getPageableWithSort(pageable, sortType));
         return BookMapper.toResponse(bookPage);
     }
 
@@ -90,6 +90,11 @@ public class DefaultBookService implements BookService {
     public void deleteBook(long bookId) {
         Book book = existsBookById(bookId);
         bookRepository.delete(book);
+    }
+
+    private Pageable getPageableWithSort(Pageable pageable, BookSortType sortType) {
+        Sort sort = BookSortType.getSort(sortType);
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
     }
 
     private Book existsBookById(long id) {
