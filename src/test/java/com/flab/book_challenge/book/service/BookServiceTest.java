@@ -10,6 +10,7 @@ import com.flab.book_challenge.book.request.BookCreateRequest;
 import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
+import com.flab.book_challenge.book.response.BooksResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -41,21 +42,22 @@ class BookServiceTest {
     }
 
 
-    @DisplayName("책 전체 조회")
+    @DisplayName("책 100권 조회")
     @Test
     void getBooks() {
         // given
         addRandomBooks();
         // when
-        List<BookDetailResponse> books = bookService.getBooks();
+        BooksResponse books = bookService.getBooks(0, 100);
+        List<BookDetailResponse> booksContent = books.data();
         // then
         int randomIndex = (int) (Math.random() * 100);
 
-        assertThat(books).hasSize(100);
-        assertThat(books.get(randomIndex).id()).isNotZero();
-        assertThat(books.get(randomIndex).bookCode()).isNotNull();
-        assertThat(books.get(randomIndex).name()).isNotNull();
-        assertThat(books.get(randomIndex).pageCount()).isNotZero();
+        assertThat(booksContent).hasSize(100);
+        assertThat(booksContent.get(randomIndex).id()).isNotZero();
+        assertThat(booksContent.get(randomIndex).bookCode()).isNotNull();
+        assertThat(booksContent.get(randomIndex).name()).isNotNull();
+        assertThat(booksContent.get(randomIndex).pageCount()).isNotZero();
     }
 
     @DisplayName("정상적인 bookCode를 넣었을 때 책 검색 테스트")

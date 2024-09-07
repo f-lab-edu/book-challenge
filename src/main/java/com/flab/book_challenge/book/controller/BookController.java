@@ -4,6 +4,7 @@ import com.flab.book_challenge.book.request.BookCreateRequest;
 import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
+import com.flab.book_challenge.book.response.BooksResponse;
 import com.flab.book_challenge.book.service.BookService;
 import com.flab.book_challenge.common.header.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,10 +31,13 @@ public class BookController {
 
     private final BookService bookService;
 
-    @Operation(summary = "책 전체 조회", tags = "Book")
+    @Operation(summary = "책 전체 조회 (페이징)", tags = "Book")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BookDetailResponse>>> getBooks() {
-        return ResponseEntity.ok(new ApiResponse<>(bookService.getBooks()));
+    public ResponseEntity<ApiResponse<BooksResponse>> getBooks(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(new ApiResponse<>(bookService.getBooks(page, size)));
     }
 
     @Operation(summary = "책 검색", tags = "Book")
