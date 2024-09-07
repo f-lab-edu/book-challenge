@@ -25,6 +25,7 @@ public final class BookMapper {
             .bookCode(book.getBookCode())
             .name(book.getName())
             .pageCount(book.getPageCount())
+            .createAt(book.getCreatedAt())
             .build();
     }
 
