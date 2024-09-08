@@ -180,5 +180,7 @@ class BookRepositoryTest {
         assertThat(actualBook.getId()).isEqualTo(expectedBook.getId());
         assertThat(actualBook.getPageCount()).isEqualTo(expectedBook.getPageCount());
         assertThat(actualBook.getName()).isEqualTo(expectedBook.getName());
+        assertThat(actualBook.getCreatedAt()).isEqualTo(expectedBook.getCreatedAt());
+        assertThat(actualBook.getUpdatedAt()).isEqualTo(expectedBook.getUpdatedAt());
     }
 }

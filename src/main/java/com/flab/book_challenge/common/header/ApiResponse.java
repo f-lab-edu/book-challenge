@@ -4,19 +4,19 @@ import lombok.Getter;
 
 @Getter
 public class ApiResponse<T> {
-    private boolean success;
-    private T data;
-    private ErrorResponse error;
+    private final boolean success;
+    private final T content;
+    private final ErrorResponse error;
 
     public ApiResponse(T data) {
         this.success = true;
-        this.data = data;
+        this.content = data;
         this.error = null;
     }
 
     public ApiResponse(ErrorResponse error) {
         this.success = false;
-        this.data = null;
+        this.content = null;
         this.error = error;
     }
 }

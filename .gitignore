@@ -24,3 +24,9 @@ rebel.xml
 
 /master/
 /slave/
+
+# Ignore schema sql
+/src/main/resources/schema.sql
+
+# Ignore dummy batch query
+**/dummy/
