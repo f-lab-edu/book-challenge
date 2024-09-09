@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +49,14 @@ public class BookController {
         @ModelAttribute BookSearchRequest bookSearchRequest
     ) {
         return ResponseEntity.ok(new ApiResponse<>(bookService.searchBooks(bookSearchRequest)));
+    }
+    
+    @Operation(summary = "책 아이디 검색", tags = "Book")
+    @GetMapping("/search/{id}")
+    public ResponseEntity<ApiResponse<BookDetailResponse>> searchBookById(
+        @PathVariable long id
+    ) {
+        return ResponseEntity.ok(new ApiResponse<>(bookService.getBookById(id)));
     }
 
     @Operation(summary = "책 추가", tags = "Book")

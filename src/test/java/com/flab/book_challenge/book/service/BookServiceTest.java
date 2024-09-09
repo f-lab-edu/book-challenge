@@ -67,6 +67,22 @@ class BookServiceTest {
         assertThat(booksContent.get(randomIndex).pageCount()).isNotZero();
     }
 
+    @DisplayName("책 아이디 조회 테스트")
+    @Test
+    void getBookById() {
+        // given
+        long saveBookId = bookService.addBook(bookCreateRequest);
+
+        // when
+        BookDetailResponse book = bookService.getBookById(saveBookId);
+
+        // then
+        assertThat(book.id()).isEqualTo(saveBookId);
+        assertThat(book.bookCode()).isEqualTo(bookCreateRequest.bookCode());
+        assertThat(book.name()).isEqualTo(bookCreateRequest.name());
+        assertThat(book.pageCount()).isEqualTo(bookCreateRequest.pageCount());
+    }
+
     @DisplayName("정상적인 bookCode를 넣었을 때 책 검색 테스트")
     @Test
     void searchBooksByBookCode() {

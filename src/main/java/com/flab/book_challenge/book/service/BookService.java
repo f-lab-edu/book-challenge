@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
+    BookDetailResponse getBookById(Long id);
+
     BooksResponse getBooks(Pageable pageable, BookSortType sortType);
 
     List<BookDetailResponse> searchBooks(BookSearchRequest bookSearchRequest);

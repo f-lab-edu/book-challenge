@@ -45,6 +45,12 @@ public class DefaultBookService implements BookService {
     }
 
     @Override
+    public BookDetailResponse getBookById(Long id) {
+        return bookRepository.findById(id).map(BookMapper::toResponse)
+            .orElseThrow(() -> new GeneralException(BOOK_NOT_FOUND));
+    }
+
+    @Override
     public BooksResponse getBooks(Pageable pageable, BookSortType sortType) {
         Page<Book> bookPage = bookRepository.findAll(getPageableWithSort(pageable, sortType));
         return BookMapper.toResponse(bookPage);
