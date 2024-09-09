@@ -60,7 +60,7 @@ public class DefaultBookService implements BookService {
 
     @Override
     public List<BookDetailResponse> getBooksByName(String name) {
-        return bookRepository.findBooksByName(name).stream()
+        return bookRepository.findBooksByNameContaining(name).stream()
             .map(BookMapper::toResponse)
             .toList();
     }

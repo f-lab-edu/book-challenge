@@ -83,18 +83,7 @@ class BookRepositoryTest {
         // given
         ArrayList<Book> books = new ArrayList<>(100);
 
-        for (int i = 0; i < 100; i++) {
-            String randomBookCode = RandomStringUtils.randomNumeric(13);
-            int randomCount = (int) (Math.random() * 101) + 100;
-            Book book;
-            book = Book.builder()
-                .bookCode(randomBookCode)
-                .name("test_book")
-                .pageCount(randomCount)
-                .build();
-
-            books.add(book);
-        }
+        makeBooks(books);
 
         bookRepository.saveAll(books);
 
@@ -115,18 +104,7 @@ class BookRepositoryTest {
         // given
         ArrayList<Book> books = new ArrayList<>(100);
 
-        for (int i = 0; i < 100; i++) {
-            String randomBookCode = RandomStringUtils.randomNumeric(13);
-            int randomCount = (int) (Math.random() * 101) + 100;
-            Book book;
-            book = Book.builder()
-                .bookCode(randomBookCode)
-                .name("test_book")
-                .pageCount(randomCount)
-                .build();
-
-            books.add(book);
-        }
+        makeBooks(books);
 
         bookRepository.saveAll(books);
 
@@ -134,7 +112,26 @@ class BookRepositoryTest {
 
         // when
         String bookName = randomBook.getName();
-        List<Book> bookByName = bookRepository.findBooksByName(bookName);
+        List<Book> bookByName = bookRepository.findBooksByNameContaining(bookName);
+
+        // then
+        assertThat(bookByName).isNotEmpty();
+        assertThat(bookByName.get(0).getName()).isEqualTo(randomBook.getName());
+    }
+
+    @DisplayName("일부 이름으로 책 조회 테스트")
+    @Test
+    void readBooksByContainingByBookName() {
+        // given
+        ArrayList<Book> books = new ArrayList<>(100);
+        makeBooks(books);
+
+        bookRepository.saveAll(books);
+        Book randomBook = books.get((int) (Math.random() * 101));
+
+        // when
+        String bookName = randomBook.getName().substring(2, 3);
+        List<Book> bookByName = bookRepository.findBooksByNameContaining(bookName);
 
         // then
         assertThat(bookByName).isNotEmpty();
@@ -172,6 +169,21 @@ class BookRepositoryTest {
         assertThat(book.getBookCode()).isEqualTo("123456789");
 
 
+    }
+
+    private void makeBooks(ArrayList<Book> books) {
+        for (int i = 0; i < 100; i++) {
+            String randomBookCode = RandomStringUtils.randomNumeric(13);
+            int randomCount = (int) (Math.random() * 101) + 100;
+            Book book;
+            book = Book.builder()
+                .bookCode(randomBookCode)
+                .name("test_book")
+                .pageCount(randomCount)
+                .build();
+
+            books.add(book);
+        }
     }
 
     private void checkSameBook(Book actualBook, Book expectedBook) {
