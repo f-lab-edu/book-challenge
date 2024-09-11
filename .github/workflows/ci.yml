@@ -42,3 +42,37 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Delete previous comment of Github Actions Bot
+        uses: izhangzhihao/delete-comment@master
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_user_name: github-actions[bot]
+          issue_number: ${{ github.event.number }}
+
+      - name: Notify current workflow is succeed
+        uses: actions/github-script@v6
+        if: success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: 'f-lab-edu',
+              repo: 'book-challenge',
+              body: '✅ Build & Test workflow succeed ✅\n- [Show details](https://github.com/f-lab-edu/book-challenge/actions/runs/${{ github.run_id }})'
+            })
+      - name: Notify current workflow is failed
+        uses: actions/github-script@v6
+        if: failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.pull_request.number }},
+              owner: 'f-lab-edu',
+              repo: 'book-challenge',
+              body: '❌ Build & Test workflow failed ❌\n- [Show details](https://github.com/f-lab-edu/book-challenge/actions/runs/${{ github.run_id }})'
+            })
+  
