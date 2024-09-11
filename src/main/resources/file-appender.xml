@@ -1,14 +1,17 @@
-<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>./logs/${APP_NAME}.log</file>
-    <encoder>
-        <pattern>${FILE_LOG_PATTERN}</pattern>
-    </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-        <!-- 일별로 로그 파일 생성 -->
-        <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <!-- 30일 지난 로그 파일 삭제 -->
-        <maxHistory>30</maxHistory>
-        <!-- 전체 로그 파일 크기 제한 (선택적) -->
-        <totalSizeCap>3GB</totalSizeCap>
-    </rollingPolicy>
-</appender>
+<include>
+    <property name="LOG_PATH" value="./logs"/>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}.log</file>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 일별로 로그 파일 생성 -->
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 30일 지난 로그 파일 삭제 -->
+            <maxHistory>30</maxHistory>
+            <!-- 전체 로그 파일 크기 제한 (선택적) -->
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+</include>
