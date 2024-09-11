@@ -39,9 +39,10 @@ jobs:
       - name: WAS인스턴스 접속 및 애플리케이션 실행
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.WAS_PUBLIC_IP }}
-          username: ubuntu
-          key: ${{ secrets.WAS_PEM_KEY }}
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.NCP_PASSWORD }}
+          key: ${{ secrets.NCP_PEM_KEY }}
           port: 22
           script: |
             docker rm -f book-challenge || true
