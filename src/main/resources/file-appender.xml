@@ -1,4 +1,4 @@
-<include>
+<included>
     <property name="LOG_PATH" value="./logs"/>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APP_NAME}.log</file>
@@ -14,4 +14,4 @@
             <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
     </appender>
-</include>
+</included>
