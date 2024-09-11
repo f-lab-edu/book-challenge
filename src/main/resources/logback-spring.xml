@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+
+    <property name="APP_NAME" value="BookChallenge"/>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [${APP_NAME}] [%thread] %highlight(%5level) %cyan(%logger) - %msg%n"/>
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [${APP_NAME}] [%thread] %5level %logger - %msg%n"/>
+
+    <!--local-->
+    <springProfile name="local">
+        <include resource="console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!--test-->
+    <springProfile name="test">
+        <include resource="console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!--prod-->
+    <springProfile name="prod">
+        <include resource="file-appender.xml"/>
+        <include resource="file-error-appender.xml"/>
+
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="FILE-ERROR"/>
+        </root>
+
+    </springProfile>
+
+</configuration>
