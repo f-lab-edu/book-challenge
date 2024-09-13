@@ -64,17 +64,17 @@ public class DefaultBookService implements BookService {
     @Override
     public BooksPaginationNoOffsetResponse getBooksByPaginationNoOffset(String sort, String lastValue,
                                                                         boolean isAscending, int limit) {
-        SortCondition<?> sortCondition = this.createSortCondition(BookSortType.from(sort), lastValue, isAscending);
+        SortCondition sortCondition = this.createSortCondition(BookSortType.from(sort), lastValue, isAscending);
         List<Book> books = bookRepository.findBooksNoOffset(sortCondition, limit);
 
-        String next = null;
+        String nextURL = null;
         if (!books.isEmpty()) {
             Book lastBook = books.getLast();
             String nextLastValue = getNextLastValue(lastBook, BookSortType.from(sort));
-            next = buildNextPageUrl(sort, nextLastValue, isAscending, limit);
+            nextURL = buildNextPageUrl(sort, nextLastValue, isAscending, limit);
         }
 
-        return BookMapper.toPaginationResponse(books, next);
+        return BookMapper.toPaginationResponse(books, nextURL);
 
     }
 
@@ -146,7 +146,7 @@ public class DefaultBookService implements BookService {
     }
 
 
-    private SortCondition<?> createSortCondition(BookSortType sortType, String lastValue, boolean isAscending) {
+    private SortCondition createSortCondition(BookSortType sortType, String lastValue, boolean isAscending) {
         return SortCondition.by(isAscending, sortType, lastValue);
     }
 

@@ -47,10 +47,10 @@ class BookRepositoryTest {
         makeBooks(books);
         bookRepository.saveAll(books);
 
-        SortCondition<Integer> firstTest = SortCondition.by(false, BookSortType.PAGE_COUNT,
-            50);
-        SortCondition<Integer> secondTest = SortCondition.by(false, BookSortType.PAGE_COUNT,
-            10);
+        SortCondition firstTest = SortCondition.by(false, BookSortType.PAGE_COUNT,
+            "50");
+        SortCondition secondTest = SortCondition.by(false, BookSortType.PAGE_COUNT,
+            "10");
 
         // when
         List<Book> firstBooks = bookRepository.findBooksNoOffset(firstTest, 10);

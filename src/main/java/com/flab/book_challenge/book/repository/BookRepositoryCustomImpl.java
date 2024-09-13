@@ -19,24 +19,24 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class BookRepositoryCustomImpl implements BookRepositoryCustom {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Book> findBooksNoOffset(SortCondition<?> sortCondition, int limit) {
+    public List<Book> findBooksNoOffset(SortCondition sortCondition, int limit) {
 
         switch (sortCondition.sortField()) {
             case CREATED_AT -> {
-                LocalDateTime lastDateTime = LocalDateTime.parse((String) sortCondition.lastValue(), formatter);
+                LocalDateTime lastDateTime = LocalDateTime.parse(sortCondition.lastValue(), formatter);
                 return findBooksByLocalDateTime(lastDateTime, sortCondition.isAscending(),
                     limit);
             }
             case PAGE_COUNT -> {
-                return findBooksByPageCount(Integer.parseInt((String) sortCondition.lastValue()),
+                return findBooksByPageCount(Integer.parseInt(sortCondition.lastValue()),
                     sortCondition.isAscending(), limit);
             }
             case BOOK_NAME -> {
-                return findBooksByBookName((String) sortCondition.lastValue(), sortCondition.isAscending(), limit);
+                return findBooksByBookName(sortCondition.lastValue(), sortCondition.isAscending(), limit);
             }
             default -> throw new GeneralException(BOOK_SORT_NOT_FOUND);
         }
