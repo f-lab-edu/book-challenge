@@ -31,3 +31,7 @@ logging:
     org.hibernate.SQL: debug
     root: info
     org.hibernate.orm.jdbc.bind: trace
+
+server:
+  url: http://localhost:8080
+  port: 8080

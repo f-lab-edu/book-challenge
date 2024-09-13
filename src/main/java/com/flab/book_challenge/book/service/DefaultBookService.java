@@ -16,10 +16,12 @@ import com.flab.book_challenge.book.response.BookDetailResponse;
 import com.flab.book_challenge.book.response.BooksPaginationNoOffsetResponse;
 import com.flab.book_challenge.book.response.BooksPaginationOffsetResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
+import com.flab.book_challenge.common.util.ServerUrlComponent;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,12 +29,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class DefaultBookService implements BookService {
+    private final ServerUrlComponent serverUrlComponent;
     private final BookRepository bookRepository;
 
 
@@ -67,12 +69,7 @@ public class DefaultBookService implements BookService {
         SortCondition sortCondition = this.createSortCondition(BookSortType.from(sort), lastValue, isAscending);
         List<Book> books = bookRepository.findBooksNoOffset(sortCondition, limit);
 
-        String nextURL = null;
-        if (!books.isEmpty()) {
-            Book lastBook = books.getLast();
-            String nextLastValue = getNextLastValue(lastBook, BookSortType.from(sort));
-            nextURL = buildNextPageUrl(sort, nextLastValue, isAscending, limit);
-        }
+        String nextURL = makePaginationNextURL(sort, isAscending, limit, books);
 
         return BookMapper.toPaginationResponse(books, nextURL);
 
@@ -150,22 +147,34 @@ public class DefaultBookService implements BookService {
         return SortCondition.by(isAscending, sortType, lastValue);
     }
 
+    private String makePaginationNextURL(String sort, boolean isAscending, int limit, List<Book> books) {
+        String nextURL = null;
+        if (!books.isEmpty()) {
+            Book lastBook = books.getLast();
+            String nextLastValue = getNextLastValue(lastBook, BookSortType.from(sort));
+            nextURL = buildNextPageUrl(sort, nextLastValue, isAscending, limit);
+        }
+        return nextURL;
+    }
+
     private String getNextLastValue(Book lastBook, BookSortType sortType) {
         return switch (sortType) {
             case CREATED_AT -> lastBook.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             case BOOK_NAME -> lastBook.getName();
             case PAGE_COUNT -> String.valueOf(lastBook.getPageCount());
-            default -> throw new IllegalArgumentException("Unsupported sort type: " + sortType);
+            default -> throw new GeneralException(QUERY_NOT_FOUND);
         };
     }
 
     private String buildNextPageUrl(String sort, String lastValue, boolean isAscending, int limit) {
-        return UriComponentsBuilder.fromUriString("http://localhost:8080/api/v1/books")
-            .queryParam("sortType", sort)
-            .queryParam("lastValue", URLEncoder.encode(lastValue, StandardCharsets.UTF_8))
-            .queryParam("isAscending", isAscending)
-            .queryParam("pageSize", limit)
-            .build()
-            .toUriString();
+
+        Map<String, Object> params = Map.of(
+            "sortType", sort,
+            "lastValue", URLEncoder.encode(lastValue, StandardCharsets.UTF_8),
+            "isAscending", isAscending,
+            "limit", limit
+        );
+
+        return serverUrlComponent.buildURL("/api/v1/books", params);
     }
 }

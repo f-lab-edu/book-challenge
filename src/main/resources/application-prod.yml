@@ -25,3 +25,7 @@ spring:
         default_batch_fetch_size: 100
     defer-datasource-initialization: true
     open-in-view: false
+
+server:
+  url: ${PROD_SERVER_URL}
+  port: 8080
