@@ -20,8 +20,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
         use_sql_comments: true
         default_batch_fetch_size: 100
     defer-datasource-initialization: true
     open-in-view: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    root: info
+    org.hibernate.orm.jdbc.bind: trace
