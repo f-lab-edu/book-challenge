@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record BooksResponse(
+public record BooksPaginationOffsetResponse(
     int pageNumber,
     int size,
     long totalElementSize,

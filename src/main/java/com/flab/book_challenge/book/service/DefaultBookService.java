@@ -13,8 +13,12 @@ import com.flab.book_challenge.book.request.BookCreateRequest;
 import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
-import com.flab.book_challenge.book.response.BooksResponse;
+import com.flab.book_challenge.book.response.BooksPaginationNoOffsetResponse;
+import com.flab.book_challenge.book.response.BooksPaginationOffsetResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +56,26 @@ public class DefaultBookService implements BookService {
     }
 
     @Override
-    public BooksResponse getBooks(Pageable pageable, BookSortType sortType) {
+    public BooksPaginationOffsetResponse getBooksByPaginationLegacy(Pageable pageable, BookSortType sortType) {
         Page<Book> bookPage = bookRepository.findAll(getPageableWithSort(pageable, sortType));
-        return BookMapper.toResponse(bookPage);
+        return BookMapper.toPaginationResponse(bookPage);
+    }
+
+    @Override
+    public BooksPaginationNoOffsetResponse getBooksByPaginationNoOffset(String sort, String lastValue,
+                                                                        boolean isAscending, int limit) {
+        SortCondition<?> sortCondition = this.createSortCondition(BookSortType.from(sort), lastValue, isAscending);
+        List<Book> books = bookRepository.findBooksNoOffset(sortCondition, limit);
+
+        String next = null;
+        if (!books.isEmpty()) {
+            Book lastBook = books.getLast();
+            String nextLastValue = getNextLastValue(lastBook, BookSortType.from(sort));
+            next = buildNextPageUrl(sort, nextLastValue, isAscending, limit);
+        }
+
+        return BookMapper.toPaginationResponse(books, next);
+
     }
 
     // bookCode 조회는 단일 책을, 정확한 이름 검색은 책 목록을 반환합니다.
@@ -123,4 +145,27 @@ public class DefaultBookService implements BookService {
         return bookRepository.save(preBook);
     }
 
+
+    private SortCondition<?> createSortCondition(BookSortType sortType, String lastValue, boolean isAscending) {
+        return SortCondition.by(isAscending, sortType, lastValue);
+    }
+
+    private String getNextLastValue(Book lastBook, BookSortType sortType) {
+        return switch (sortType) {
+            case CREATED_AT -> lastBook.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            case BOOK_NAME -> lastBook.getName();
+            case PAGE_COUNT -> String.valueOf(lastBook.getPageCount());
+            default -> throw new IllegalArgumentException("Unsupported sort type: " + sortType);
+        };
+    }
+
+    private String buildNextPageUrl(String sort, String lastValue, boolean isAscending, int limit) {
+        return UriComponentsBuilder.fromUriString("http://localhost:8080/api/v1/books")
+            .queryParam("sortType", sort)
+            .queryParam("lastValue", URLEncoder.encode(lastValue, StandardCharsets.UTF_8))
+            .queryParam("isAscending", isAscending)
+            .queryParam("pageSize", limit)
+            .build()
+            .toUriString();
+    }
 }
