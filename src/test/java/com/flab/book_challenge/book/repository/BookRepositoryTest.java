@@ -2,7 +2,9 @@ package com.flab.book_challenge.book.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.flab.book_challenge.book.controller.BookSortType;
 import com.flab.book_challenge.book.domain.Book;
+import com.flab.book_challenge.book.service.SortCondition;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -34,6 +36,32 @@ class BookRepositoryTest {
             .name("test_book")
             .pageCount(randomCount)
             .build();
+
+    }
+
+    @DisplayName("No-Offset 방식으로 책 페이지 큰것 크기순 조회 테스트")
+    @Test
+    void testFindBooksNoOffset() {
+        // given
+        ArrayList<Book> books = new ArrayList<>(100);
+        makeBooks(books);
+        bookRepository.saveAll(books);
+
+        SortCondition firstTest = SortCondition.by(false, BookSortType.PAGE_COUNT,
+            "50");
+        SortCondition secondTest = SortCondition.by(false, BookSortType.PAGE_COUNT,
+            "10");
+
+        // when
+        List<Book> firstBooks = bookRepository.findBooksNoOffset(firstTest, 10);
+        List<Book> secondBooks = bookRepository.findBooksNoOffset(secondTest, 10);
+
+        // then
+        assertThat(firstBooks).hasSize(10);
+        assertThat(secondBooks).hasSize(10);
+        assertThat(firstBooks.getFirst().getPageCount()).isEqualTo(49);
+        assertThat(firstBooks.get(1).getPageCount()).isEqualTo(48);
+        assertThat(secondBooks.getFirst().getPageCount()).isEqualTo(9);
 
     }
 
@@ -174,12 +202,12 @@ class BookRepositoryTest {
     private void makeBooks(ArrayList<Book> books) {
         for (int i = 0; i < 100; i++) {
             String randomBookCode = RandomStringUtils.randomNumeric(13);
-            int randomCount = (int) (Math.random() * 101) + 100;
+
             Book book;
             book = Book.builder()
                 .bookCode(randomBookCode)
                 .name("test_book")
-                .pageCount(randomCount)
+                .pageCount(i)
                 .build();
 
             books.add(book);

@@ -11,7 +11,7 @@ import com.flab.book_challenge.book.request.BookCreateRequest;
 import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.request.BookUpdateRequest;
 import com.flab.book_challenge.book.response.BookDetailResponse;
-import com.flab.book_challenge.book.response.BooksResponse;
+import com.flab.book_challenge.book.response.BooksPaginationOffsetResponse;
 import com.flab.book_challenge.common.exception.GeneralException;
 import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -54,7 +54,7 @@ class BookServiceTest {
         BookSortType sortType = BookSortType.LATEST;
 
         // when
-        BooksResponse books = bookService.getBooks(pageable, sortType);
+        BooksPaginationOffsetResponse books = bookService.getBooksByPaginationLegacy(pageable, sortType);
         List<BookDetailResponse> booksContent = books.data();
 
         // then

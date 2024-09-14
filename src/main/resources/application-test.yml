@@ -18,3 +18,7 @@ spring:
   sql:
     init:
       mode: never
+
+server:
+  url: http://localhost:8080
+  port: 8080

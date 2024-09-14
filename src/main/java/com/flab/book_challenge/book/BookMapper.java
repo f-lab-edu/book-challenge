@@ -2,8 +2,9 @@ package com.flab.book_challenge.book;
 
 import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.response.BookDetailResponse;
-import com.flab.book_challenge.book.response.BooksResponse;
-import java.util.stream.Collectors;
+import com.flab.book_challenge.book.response.BooksPaginationNoOffsetResponse;
+import com.flab.book_challenge.book.response.BooksPaginationOffsetResponse;
+import java.util.List;
 import org.springframework.data.domain.Page;
 
 public final class BookMapper {
@@ -29,8 +30,8 @@ public final class BookMapper {
             .build();
     }
 
-    public static BooksResponse toResponse(Page<Book> books) {
-        return BooksResponse.builder()
+    public static BooksPaginationOffsetResponse toPaginationResponse(Page<Book> books) {
+        return BooksPaginationOffsetResponse.builder()
             .pageNumber(books.getPageable().getPageNumber())
             .size(books.getSize())
             .totalElementSize(books.getTotalElements())
@@ -38,8 +39,20 @@ public final class BookMapper {
             .hasNext(books.hasNext())
             .data(books.getContent().stream()
                 .map(BookMapper::toResponse)
-                .collect(Collectors.toList())
+                .toList()
             )
             .build();
     }
+
+    public static BooksPaginationNoOffsetResponse toPaginationResponse(List<Book> books, String next) {
+        return BooksPaginationNoOffsetResponse.builder()
+            .data(books.stream()
+                .map(BookMapper::toResponse)
+                .toList()
+            )
+            .next(next)
+            .build();
+    }
+
+
 }
