@@ -126,46 +126,6 @@ class BookRepositoryTest {
         checkSameBook(bookByBookCode, randomBook);
     }
 
-    @DisplayName("책이름으로 책 조회 테스트")
-    @Test
-    void readBooksByBookName() {
-        // given
-        ArrayList<Book> books = new ArrayList<>(100);
-
-        makeBooks(books);
-
-        bookRepository.saveAll(books);
-
-        Book randomBook = books.get((int) (Math.random() * 101));
-
-        // when
-        String bookName = randomBook.getName();
-        List<Book> bookByName = bookRepository.findBooksByNameContaining(bookName);
-
-        // then
-        assertThat(bookByName).isNotEmpty();
-        assertThat(bookByName.get(0).getName()).isEqualTo(randomBook.getName());
-    }
-
-    @DisplayName("일부 이름으로 책 조회 테스트")
-    @Test
-    void readBooksByContainingByBookName() {
-        // given
-        ArrayList<Book> books = new ArrayList<>(100);
-        makeBooks(books);
-
-        bookRepository.saveAll(books);
-        Book randomBook = books.get((int) (Math.random() * 101));
-
-        // when
-        String bookName = randomBook.getName().substring(2, 3);
-        List<Book> bookByName = bookRepository.findBooksByNameContaining(bookName);
-
-        // then
-        assertThat(bookByName).isNotEmpty();
-        assertThat(bookByName.get(0).getName()).isEqualTo(randomBook.getName());
-    }
-
 
     @DisplayName("책 제거 테스트")
     @Test

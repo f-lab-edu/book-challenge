@@ -11,7 +11,6 @@ import com.flab.book_challenge.common.header.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -57,12 +56,13 @@ public class BookController {
     }
 
 
-    @Operation(summary = "책 검색", tags = "Book")
+    @Operation(summary = "책 검색 (페이지네이션)", tags = "Book")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<BookDetailResponse>>> searchBooks(
+    public ResponseEntity<ApiResponse<BooksPaginationOffsetResponse>> searchBooks(
+        @PageableDefault(size = 30) Pageable pageable,
         @ModelAttribute BookSearchRequest bookSearchRequest
     ) {
-        return ResponseEntity.ok(new ApiResponse<>(bookService.searchBooks(bookSearchRequest)));
+        return ResponseEntity.ok(new ApiResponse<>(bookService.searchBooks(pageable, bookSearchRequest)));
     }
 
     @Operation(summary = "책 아이디 검색", tags = "Book")

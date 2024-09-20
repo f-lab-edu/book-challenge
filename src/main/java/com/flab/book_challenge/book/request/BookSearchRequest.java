@@ -8,5 +8,6 @@ import lombok.Getter;
 public class BookSearchRequest {
     private String bookCode;
     private String name;
-
+    private Integer minPageCount;
+    private Integer maxPageCount;
 }
