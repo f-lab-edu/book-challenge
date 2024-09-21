@@ -89,7 +89,8 @@ class BookServiceTest {
         bookService.addBook(bookCreateRequest);
         addRandomBooks();
 
-        BookSearchRequest bookSearchRequest = new BookSearchRequest(bookCreateRequest.bookCode(), null, null, null);
+        BookSearchRequest bookSearchRequest = new BookSearchRequest(false, bookCreateRequest.bookCode(), null, null,
+            null);
         Pageable pageable = PageRequest.of(0, 100);
 
         // when
@@ -109,7 +110,7 @@ class BookServiceTest {
         bookService.addBook(bookCreateRequest);
         addRandomBooks();
 
-        BookSearchRequest bookSearchRequest = new BookSearchRequest(null, bookCreateRequest.name(), null, null);
+        BookSearchRequest bookSearchRequest = new BookSearchRequest(false, null, bookCreateRequest.name(), null, null);
         Pageable pageable = PageRequest.of(0, 101);
 
         // when

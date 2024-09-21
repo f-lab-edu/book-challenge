@@ -43,7 +43,7 @@ public class DefaultBookService implements BookService {
     public BooksPaginationOffsetResponse searchBooks(Pageable pageable, BookSearchRequest searchRequest) {
 
         Page<Book> books = bookRepository.paginationBookSearch(pageable, searchRequest);
-        
+
         return BookMapper.toPaginationResponse(books);
     }
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class BookSearchRequest {
+    private boolean useSearchBtn;
     private String bookCode;
     private String name;
     private Integer minPageCount;

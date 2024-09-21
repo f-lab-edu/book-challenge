@@ -7,6 +7,7 @@ import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.domain.QBook;
 import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.service.SortCondition;
+import com.flab.book_challenge.common.FixedPageRequest;
 import com.flab.book_challenge.common.exception.GeneralException;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
@@ -44,43 +45,21 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
             .limit(pageable.getPageSize())
             .fetch();
 
+        if (searchRequest.isUseSearchBtn()) {
+            int fixedPageCount = 10 * pageable.getPageSize();
+            return new PageImpl<>(books, pageable, fixedPageCount);
+        }
+
         Long total = queryFactory
             .select(book.count())
             .from(book)
             .where(predicate)
             .fetchOne();
+        Pageable pageRequest = new FixedPageRequest(pageable, total);
 
-        return new PageImpl<>(books, pageable, total);
+        return new PageImpl<>(books, pageRequest, total);
     }
 
-    private Predicate createSearchPredicate(QBook book, BookSearchRequest searchRequest) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if (searchRequest.getMaxPageCount() != null && searchRequest.getMinPageCount() != null) {
-            builder.and(book.pageCount.between(searchRequest.getMinPageCount(), searchRequest.getMaxPageCount()));
-        }
-        else if (searchRequest.getMaxPageCount() != null) {
-            builder.and(book.pageCount.loe(searchRequest.getMaxPageCount()));
-        }
-        else if (searchRequest.getMinPageCount() != null) {
-            builder.and(book.pageCount.goe(searchRequest.getMinPageCount()));
-        }
-
-        if (StringUtil.notNullNorEmpty(searchRequest.getName())) {
-            builder.and(book.name
-                .like("%" + searchRequest.getName() + "%")
-            );
-        }
-
-        if (StringUtil.notNullNorEmpty(searchRequest.getBookCode())) {
-            builder.and(
-                book.bookCode.like("%" + searchRequest.getBookCode() + "%")
-            );
-
-        }
-
-        return builder.getValue();
-    }
 
     @Override
     public List<Book> findBooksNoOffset(SortCondition sortCondition, int limit) {
@@ -142,5 +121,34 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
             .orderBy(isAsc)
             .limit(limit)
             .fetch();
+    }
+
+    private Predicate createSearchPredicate(QBook book, BookSearchRequest searchRequest) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (searchRequest.getMaxPageCount() != null && searchRequest.getMinPageCount() != null) {
+            builder.and(book.pageCount.between(searchRequest.getMinPageCount(), searchRequest.getMaxPageCount()));
+        }
+        else if (searchRequest.getMaxPageCount() != null) {
+            builder.and(book.pageCount.loe(searchRequest.getMaxPageCount()));
+        }
+        else if (searchRequest.getMinPageCount() != null) {
+            builder.and(book.pageCount.goe(searchRequest.getMinPageCount()));
+        }
+
+        if (StringUtil.notNullNorEmpty(searchRequest.getName())) {
+            builder.and(book.name
+                .like("%" + searchRequest.getName() + "%")
+            );
+        }
+
+        if (StringUtil.notNullNorEmpty(searchRequest.getBookCode())) {
+            builder.and(
+                book.bookCode.like("%" + searchRequest.getBookCode() + "%")
+            );
+
+        }
+
+        return builder.getValue();
     }
 }
