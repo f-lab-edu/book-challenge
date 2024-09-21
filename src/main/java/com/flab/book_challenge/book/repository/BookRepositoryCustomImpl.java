@@ -76,6 +76,7 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
             builder.and(
                 book.bookCode.like("%" + searchRequest.getBookCode() + "%")
             );
+
         }
 
         return builder.getValue();
