@@ -4,7 +4,6 @@ import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_DUPLICAT
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_NOT_FOUND;
 import static com.flab.book_challenge.common.exception.ErrorStatus.QUERY_NOT_FOUND;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.flab.book_challenge.book.BookMapper;
 import com.flab.book_challenge.book.controller.BookSortType;
 import com.flab.book_challenge.book.domain.Book;
@@ -23,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,22 +33,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class DefaultBookService implements BookService {
     private final ServerUrlComponent serverUrlComponent;
     private final BookRepository bookRepository;
 
 
     @Override
-    public List<BookDetailResponse> searchBooks(BookSearchRequest searchRequest) {
+    public BooksPaginationOffsetResponse searchBooks(Pageable pageable, BookSearchRequest searchRequest) {
 
-        if (StringUtil.notNullNorEmpty(searchRequest.getBookCode())) {
-            return List.of(getBookByBookCode(searchRequest.getBookCode()));
-        }
-        else if (StringUtil.notNullNorEmpty(searchRequest.getName())) {
-            return getBooksByName(searchRequest.getName());
-        }
+        Page<Book> books = bookRepository.paginationBookSearch(pageable, searchRequest);
 
-        throw new GeneralException(QUERY_NOT_FOUND);
+        return BookMapper.toPaginationResponse(books);
     }
 
     @Override
@@ -73,21 +69,6 @@ public class DefaultBookService implements BookService {
 
         return BookMapper.toPaginationResponse(books, nextURL);
 
-    }
-
-    // bookCode 조회는 단일 책을, 정확한 이름 검색은 책 목록을 반환합니다.
-    @Override
-    public BookDetailResponse getBookByBookCode(String bookCode) {
-        return bookRepository.findBookByBookCode(bookCode)
-            .map(BookMapper::toResponse)
-            .orElseThrow(() -> new GeneralException(BOOK_NOT_FOUND));
-    }
-
-    @Override
-    public List<BookDetailResponse> getBooksByName(String name) {
-        return bookRepository.findBooksByNameContaining(name).stream()
-            .map(BookMapper::toResponse)
-            .toList();
     }
 
 

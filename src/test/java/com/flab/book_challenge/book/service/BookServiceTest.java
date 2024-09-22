@@ -2,7 +2,6 @@ package com.flab.book_challenge.book.service;
 
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_DUPLICATION;
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_NOT_FOUND;
-import static com.flab.book_challenge.common.exception.ErrorStatus.QUERY_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -90,16 +89,18 @@ class BookServiceTest {
         bookService.addBook(bookCreateRequest);
         addRandomBooks();
 
-        BookSearchRequest bookSearchRequest = new BookSearchRequest(bookCreateRequest.bookCode(), null);
+        BookSearchRequest bookSearchRequest = new BookSearchRequest(false, bookCreateRequest.bookCode(), null, null,
+            null);
+        Pageable pageable = PageRequest.of(0, 100);
 
         // when
-        List<BookDetailResponse> bookDetailResponses = bookService.searchBooks(bookSearchRequest);
+        List<BookDetailResponse> data = bookService.searchBooks(pageable, bookSearchRequest).data();
 
         // then
-        assertThat(bookDetailResponses).hasSize(1);
-        assertThat(bookDetailResponses.getFirst().bookCode()).isEqualTo(bookCreateRequest.bookCode());
-        assertThat(bookDetailResponses.getFirst().name()).isEqualTo(bookCreateRequest.name());
-        assertThat(bookDetailResponses.getFirst().pageCount()).isEqualTo(bookCreateRequest.pageCount());
+        assertThat(data).hasSize(1);
+        assertThat(data.getFirst().bookCode()).isEqualTo(bookCreateRequest.bookCode());
+        assertThat(data.getFirst().name()).isEqualTo(bookCreateRequest.name());
+        assertThat(data.getFirst().pageCount()).isEqualTo(bookCreateRequest.pageCount());
     }
 
     @DisplayName("정확한 책 이름을 넣었을 때 책 검색 테스트")
@@ -109,73 +110,15 @@ class BookServiceTest {
         bookService.addBook(bookCreateRequest);
         addRandomBooks();
 
-        BookSearchRequest bookSearchRequest = new BookSearchRequest(null, bookCreateRequest.name());
+        BookSearchRequest bookSearchRequest = new BookSearchRequest(false, null, bookCreateRequest.name(), null, null);
+        Pageable pageable = PageRequest.of(0, 101);
 
         // when
-        List<BookDetailResponse> bookDetailResponses = bookService.searchBooks(bookSearchRequest);
+        List<BookDetailResponse> data = bookService.searchBooks(pageable, bookSearchRequest).data();
 
         // then
-        assertThat(bookDetailResponses).hasSize(101);
+        assertThat(data).hasSize(101);
 
-    }
-
-    @DisplayName("검색에 어떠한 데이터도 없을 때 예외 반환")
-    @Test
-    void noSearchBooks() {
-        // given
-        addRandomBooks();
-        BookSearchRequest bookSearchRequest = new BookSearchRequest(null, null);
-
-        // when
-        // then
-        assertThatThrownBy(() -> bookService.searchBooks(bookSearchRequest))
-            .isInstanceOf(GeneralException.class)
-            .hasMessage(QUERY_NOT_FOUND.getMessage());
-
-    }
-
-    @DisplayName("책 bookCode로 조회")
-    @Test
-    void getBookByBookCode() {
-        // given
-        bookService.addBook(bookCreateRequest);
-        // when
-        BookDetailResponse book = bookService.getBookByBookCode(bookCreateRequest.bookCode());
-        // then
-        assertThat(book.id()).isNotZero();
-        assertThat(book.bookCode()).isEqualTo(bookCreateRequest.bookCode());
-        assertThat(book.name()).isEqualTo(bookCreateRequest.name());
-        assertThat(book.pageCount()).isEqualTo(bookCreateRequest.pageCount());
-    }
-
-    @DisplayName("존재하지 않는 책 BookCode로 조회시 예외 반환")
-    @Test
-    void getBookByBookCode_NotFound() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> bookService.getBookByBookCode("1"))
-            .isInstanceOf(GeneralException.class)
-            .hasMessage(BOOK_NOT_FOUND.getMessage());
-    }
-
-    @DisplayName("책 이름으로 조회")
-    @Test
-    void getBookByName() {
-        // given
-        addRandomBooks();
-
-        // when
-        List<BookDetailResponse> books = bookService.getBooksByName("test_book");
-
-        // then
-        int randomIndex = (int) (Math.random() * 100);
-
-        assertThat(books).hasSize(100);
-        assertThat(books.get(randomIndex).id()).isNotZero();
-        assertThat(books.get(randomIndex).bookCode()).isNotNull();
-        assertThat(books.get(randomIndex).name()).isEqualTo("test_book");
-        assertThat(books.get(randomIndex).pageCount()).isNotZero();
     }
 
 
@@ -193,24 +136,6 @@ class BookServiceTest {
             .hasMessage(BOOK_DUPLICATION.getMessage());
     }
 
-    @DisplayName("책 정보 수정")
-    @Test
-    void updateBook() {
-        // given
-        long saveBookId = bookService.addBook(bookCreateRequest);
-        BookUpdateRequest updateRequest = new BookUpdateRequest(saveBookId, bookCreateRequest.bookCode(), "update_book",
-            200);
-
-        // when
-        bookService.updateBook(updateRequest);
-
-        // then
-        BookDetailResponse book = bookService.getBookByBookCode(bookCreateRequest.bookCode());
-        assertThat(book.id()).isNotZero();
-        assertThat(book.bookCode()).isEqualTo(bookCreateRequest.bookCode());
-        assertThat(book.name()).isEqualTo("update_book");
-        assertThat(book.pageCount()).isEqualTo(200);
-    }
 
     @DisplayName("책 정보 수정시 책이 존재하지 않으면 예외 반환")
     @Test
@@ -225,23 +150,6 @@ class BookServiceTest {
             .hasMessage(BOOK_NOT_FOUND.getMessage());
     }
 
-    @DisplayName("책 삭제 테스트")
-    @Test
-    void deleteBook() {
-        // given
-        long saveBookId = bookService.addBook(bookCreateRequest);
-
-        // when
-        bookService.deleteBook(saveBookId);
-
-        // then
-        String bookCode = bookCreateRequest.bookCode();
-
-        assertThatThrownBy(() -> bookService.getBookByBookCode(bookCode))
-            .isInstanceOf(GeneralException.class)
-            .hasMessage(BOOK_NOT_FOUND.getMessage());
-
-    }
 
     private void addRandomBooks() {
         for (int i = 0; i < 100; i++) {

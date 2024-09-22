@@ -2,17 +2,25 @@ package com.flab.book_challenge.book.repository;
 
 import static com.flab.book_challenge.common.exception.ErrorStatus.BOOK_SORT_NOT_FOUND;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.flab.book_challenge.book.domain.Book;
 import com.flab.book_challenge.book.domain.QBook;
+import com.flab.book_challenge.book.request.BookSearchRequest;
 import com.flab.book_challenge.book.service.SortCondition;
+import com.flab.book_challenge.common.FixedPageRequest;
 import com.flab.book_challenge.common.exception.GeneralException;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -21,6 +29,37 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final JPAQueryFactory queryFactory;
+
+
+    @Override
+    public Page<Book> paginationBookSearch(Pageable pageable, BookSearchRequest searchRequest) {
+        QBook book = QBook.book;
+
+        Predicate predicate = createSearchPredicate(book, searchRequest);
+
+        List<Book> books = queryFactory
+            .selectFrom(book)
+            .where(predicate)
+            .orderBy(book.createdAt.desc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        if (searchRequest.isUseSearchBtn()) {
+            int fixedPageCount = 10 * pageable.getPageSize();
+            return new PageImpl<>(books, pageable, fixedPageCount);
+        }
+
+        Long total = queryFactory
+            .select(book.count())
+            .from(book)
+            .where(predicate)
+            .fetchOne();
+        Pageable pageRequest = new FixedPageRequest(pageable, total);
+
+        return new PageImpl<>(books, pageRequest, total);
+    }
+
 
     @Override
     public List<Book> findBooksNoOffset(SortCondition sortCondition, int limit) {
@@ -82,5 +121,34 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
             .orderBy(isAsc)
             .limit(limit)
             .fetch();
+    }
+
+    private Predicate createSearchPredicate(QBook book, BookSearchRequest searchRequest) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (searchRequest.getMaxPageCount() != null && searchRequest.getMinPageCount() != null) {
+            builder.and(book.pageCount.between(searchRequest.getMinPageCount(), searchRequest.getMaxPageCount()));
+        }
+        else if (searchRequest.getMaxPageCount() != null) {
+            builder.and(book.pageCount.loe(searchRequest.getMaxPageCount()));
+        }
+        else if (searchRequest.getMinPageCount() != null) {
+            builder.and(book.pageCount.goe(searchRequest.getMinPageCount()));
+        }
+
+        if (StringUtil.notNullNorEmpty(searchRequest.getName())) {
+            builder.and(book.name
+                .like("%" + searchRequest.getName() + "%")
+            );
+        }
+
+        if (StringUtil.notNullNorEmpty(searchRequest.getBookCode())) {
+            builder.and(
+                book.bookCode.like("%" + searchRequest.getBookCode() + "%")
+            );
+
+        }
+
+        return builder.getValue();
     }
 }
